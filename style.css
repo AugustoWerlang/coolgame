@@ -9,6 +9,7 @@ body{
     display: grid;
     place-items: center;
     background-color: rgb(42, 42, 42);
+    overflow: hidden;
 }
 
 .main {
