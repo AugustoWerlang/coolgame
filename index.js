@@ -26,6 +26,7 @@ class Sprite {
         }
         this.color = color
         this.isAttacking
+        this.health = 100
     }
 
     draw() {
@@ -34,7 +35,7 @@ class Sprite {
 
         // attack box
         if (this.isAttacking) {
-            c.fillStyle = "green"
+            c.fillStyle = "#e76f51"
             c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
         }
     }
@@ -62,13 +63,14 @@ class Sprite {
 
 const player = new Sprite({
     position: {
-        x: 0,
-        y: 0
+        x: 150,
+        y: 150
     },
     velocity: {
         x: 0,
         y: 0
     },
+    color: "#2a9d8f",
     offset: {
         x: 0,
         y: 0
@@ -77,14 +79,14 @@ const player = new Sprite({
 
 const enemy = new Sprite({
     position: {
-        x: 400,
-        y: 100
+        x: canvas.width - 200,
+        y: 150
     },
     velocity: {
         x: 0,
         y: 0
     },
-    color: "blue",
+    color: "#e9c46a",
     offset: {
         x: -50,
         y: 0
@@ -106,9 +108,25 @@ const keys = {
     }
 }
 
+function rectanngularColision({
+    rectangle1,
+    rectangle2
+}) {
+    return(
+        rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x &&
+        rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width &&
+        rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y &&
+        rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
+    )
+}
+
+function resetGame(){
+    window.location.reload();
+}
+
 function animate() {
     window.requestAnimationFrame(animate)
-    c.fillStyle = "black"
+    c.fillStyle = "#264653"
     c.fillRect(0, 0, canvas.width, canvas.height)
     player.update()
     enemy.update()
@@ -132,24 +150,38 @@ function animate() {
 
     // detect for colision
     if (
-        player.attackBox.position.x + player.attackBox.width >= enemy.position.x &&
-        player.attackBox.position.x <= enemy.position.x + enemy.width &&
-        player.attackBox.position.y + player.attackBox.height >= enemy.position.y &&
-        player.attackBox.position.y <= enemy.position.y + enemy.height &&
+        rectanngularColision({
+            rectangle1: player,
+            rectangle2: enemy
+        }) &&
         player.isAttacking
     ) {
         player.isAttacking = false
-        console.log("player hits enemy")
+        enemy.health -= 20
+        document.querySelector("#enemyHealth").style.width = enemy.health + "%"
+        if (enemy.health <= 0) { 
+            setTimeout(() => {
+                alert("Player one wins")
+                resetGame()
+            }, 100);
+        }
     }
     if (
-        enemy.attackBox.position.x + enemy.attackBox.width >= player.position.x &&
-        enemy.attackBox.position.x <= player.position.x + player.width &&
-        enemy.attackBox.position.y + enemy.attackBox.height >= player.position.y &&
-        enemy.attackBox.position.y <= player.position.y + player.height &&
+        rectanngularColision({
+            rectangle1: enemy,
+            rectangle2: player
+        }) &&
         enemy.isAttacking
     ) {
         enemy.isAttacking = false
-        console.log("enemy hits player")
+        player.health -= 20
+        document.querySelector("#playerHealth").style.width = player.health + "%"
+        if (player.health <= 0) { 
+            setTimeout(() => {
+                alert("Player two wins")
+                resetGame()
+            }, 100);
+        }
     }
 }
 
@@ -187,7 +219,6 @@ window.addEventListener("keydown", (event) => {
             enemy.attack();
             break
     }
-    console.log(event.key)
 })
 
 window.addEventListener("keyup", (event) => {
