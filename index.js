@@ -41,8 +41,8 @@ class Sprite {
 
     update() {
         this.draw()
-        this.attackBox.position.x = this.position.x
-        this.attackBox.position.y = this.position.y
+        this.attackBox.position.x = this.position.x + this.attackBox.offset.x
+        this.attackBox.position.y = this.position.y + this.attackBox.offset.y
 
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
@@ -141,6 +141,16 @@ function animate() {
         player.isAttacking = false
         console.log("player hits enemy")
     }
+    if (
+        enemy.attackBox.position.x + enemy.attackBox.width >= player.position.x &&
+        enemy.attackBox.position.x <= player.position.x + player.width &&
+        enemy.attackBox.position.y + enemy.attackBox.height >= player.position.y &&
+        enemy.attackBox.position.y <= player.position.y + player.height &&
+        enemy.isAttacking
+    ) {
+        enemy.isAttacking = false
+        console.log("enemy hits player")
+    }
 }
 
 animate()
@@ -172,6 +182,9 @@ window.addEventListener("keydown", (event) => {
         case "ArrowLeft":
             keys.ArrowLeft.pressed = true
             enemy.lastKey = "ArrowLeft"
+            break
+        case "Control":
+            enemy.attack();
             break
     }
     console.log(event.key)
