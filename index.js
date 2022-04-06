@@ -215,7 +215,7 @@ window.addEventListener("keydown", (event) => {
             keys.ArrowLeft.pressed = true
             enemy.lastKey = "ArrowLeft"
             break
-        case "Control":
+        case "ArrowDown":
             enemy.attack();
             break
     }
